@@ -3,315 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Proyecto PAZ — Sanitario 3D + AR</title>
-    
+    <title>Proyecto PAZ — Modelos 3D + AR</title>
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
-            background: #1a1a2e;
+            background: #0a0a14;
             color: #e0e0e0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
         }
-        
         header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 24px 20px;
             text-align: center;
-            padding: 20px 15px 10px;
-            width: 100%;
-            max-width: 800px;
+            border-bottom: 2px solid #00d2ff33;
         }
-        
-        header h1 {
-            font-size: clamp(1.2rem, 4vw, 1.8rem);
-            color: #00d2ff;
-            letter-spacing: 1px;
-        }
-        
-        header p {
-            font-size: 0.85rem;
-            color: #888;
-            margin-top: 5px;
-        }
-        
+        header h1 { color: #00d2ff; font-size: 1.8rem; letter-spacing: 1px; }
+        header p { color: #888; margin-top: 6px; font-size: 0.9rem; }
+        .badges { margin-top: 12px; }
         .badge {
             display: inline-block;
-            background: #00d2ff22;
-            border: 1px solid #00d2ff44;
+            background: #00d2ff15;
+            border: 1px solid #00d2ff33;
             color: #00d2ff;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 20px;
             font-size: 0.75rem;
-            margin: 6px 4px;
+            margin: 4px;
         }
-        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin: 20px 0 0;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 12px 28px;
+            cursor: pointer;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            color: #888;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .tab:first-child { border-radius: 10px 0 0 10px; }
+        .tab:last-child { border-radius: 0 10px 10px 0; }
+        .tab.active {
+            background: #00d2ff20;
+            border-color: #00d2ff;
+            color: #00d2ff;
+            box-shadow: 0 0 12px #00d2ff22;
+        }
         .viewer-container {
             width: 100%;
-            max-width: 900px;
-            height: 70vh;
+            max-width: 1000px;
+            height: 65vh;
             min-height: 450px;
-            margin: 10px auto;
+            margin: 15px auto;
             position: relative;
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
             background: #0d0d1a;
         }
-        
         model-viewer {
             width: 100%;
             height: 100%;
             --progress-bar-color: #00d2ff;
             --progress-bar-height: 4px;
-            --progress-mask: transparent;
         }
-        
-        /* Botón AR */
-        #ar-button {
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .ar-btn {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            color: white;
+            bottom: 22px;
+            right: 22px;
+            background: linear-gradient(135deg, #00cc66, #00ff88);
+            color: #0a0a14;
             border: none;
-            padding: 14px 28px;
+            padding: 14px 26px;
             border-radius: 30px;
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 18px rgba(0,210,255,0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(0,255,136,0.35);
             z-index: 10;
+            transition: transform 0.2s;
+            display: none;
         }
-        
-        #ar-button.visible { display: flex; }
-        #ar-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 24px rgba(0,210,255,0.6);
-        }
-        #ar-button:active { transform: translateY(0); }
-        #ar-button svg { width: 22px; height: 22px; }
-        
-        .info-panel {
+        .ar-btn:hover { transform: translateY(-3px); }
+        .ar-btn svg { width: 20px; height: 20px; margin-right: 6px; vertical-align: middle; }
+        .info-grid {
             width: 100%;
-            max-width: 900px;
-            padding: 15px 20px;
+            max-width: 1000px;
+            margin: 0 auto 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 12px;
-            margin-bottom: 20px;
+            padding: 0 15px;
         }
-        
         .info-card {
             background: #16213e;
             border: 1px solid #1a3a5c;
             border-radius: 10px;
-            padding: 14px;
+            padding: 16px;
             text-align: center;
         }
-        
-        .info-card .icon { font-size: 1.5rem; margin-bottom: 4px; }
-        .info-card .label { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-        .info-card .value { font-size: 1rem; font-weight: 600; color: #fff; margin-top: 2px; }
-        
+        .info-card .icon { font-size: 1.6rem; margin-bottom: 4px; }
+        .info-card .label { font-size: 0.65rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+        .info-card .value { font-size: 1rem; font-weight: 600; color: #fff; margin-top: 3px; }
         footer {
             text-align: center;
-            padding: 10px;
-            color: #555;
+            padding: 16px;
+            color: #444;
             font-size: 0.7rem;
-            width: 100%;
-            max-width: 900px;
+            border-top: 1px solid #1a1a2e;
+            margin-top: 10px;
         }
-        
-        /* Loading */
-        #loading-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #0d0d1a;
-            z-index: 5;
-            transition: opacity 0.4s;
+        .loading-overlay {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: #0d0d1a; z-index: 5;
+            transition: opacity 0.5s;
         }
-        #loading-overlay.hidden { opacity: 0; pointer-events: none; }
-        
+        .loading-overlay.done { opacity: 0; pointer-events: none; }
         .spinner {
-            width: 48px;
-            height: 48px;
+            width: 44px; height: 44px;
             border: 3px solid #333;
             border-top-color: #00d2ff;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        #loading-overlay p {
-            margin-top: 14px;
-            color: #888;
-            font-size: 0.85rem;
-        }
-        
+        .loading-overlay p { margin-top: 12px; color: #888; font-size: 0.85rem; }
         @media (max-width: 600px) {
-            .viewer-container { height: 55vh; min-height: 300px; border-radius: 0; }
-            #ar-button { bottom: 12px; right: 12px; padding: 12px 22px; font-size: 0.9rem; }
+            .viewer-container { height: 50vh; min-height: 300px; border-radius: 8px; }
+            .tab { padding: 10px 18px; font-size: 0.8rem; }
+            header h1 { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>🏥 Proyecto PAZ — Sanitario 3D</h1>
-        <p>MKA_SAN_3D_W_XX · La Paz, BCS</p>
-        <div>
-            <span class="badge">📐 Sanitario</span>
-            <span class="badge">🏗️ 12 Niveles</span>
-            <span class="badge">🥽 AR Ready</span>
-        </div>
-    </header>
+<header>
+    <h1>🏗️ Proyecto PAZ — Modelos 3D</h1>
+    <p>La Paz, BCS · SOH — Servicios y Obras Hidráulicas</p>
+    <div class="badges">
+        <span class="badge">📐 Sanitario</span>
+        <span class="badge">💧 Pluvial</span>
+        <span class="badge">🏢 12 Niveles</span>
+        <span class="badge">🥽 AR Ready</span>
+    </div>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('sanitario')">🚿 Sanitario</div>
+        <div class="tab" onclick="switchTab('pluvial')">🌧️ Pluvial</div>
+    </div>
+</header>
 
+<!-- Sanitario -->
+<div id="panel-sanitario" class="panel active">
     <div class="viewer-container">
-        <div id="loading-overlay">
+        <div class="loading-overlay" id="loader-sanitario">
             <div class="spinner"></div>
-            <p>Cargando modelo 3D...</p>
+            <p>Cargando modelo sanitario...</p>
         </div>
-        
-        <model-viewer 
-            id="model-viewer"
+        <model-viewer id="mv-sanitario"
             src="https://cdn.jsdelivr.net/gh/hrubio-lang/paz-sanitario-ar@main/modelo_draco.glb"
-            alt="Modelo sanitario Proyecto PAZ"
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            ar-scale="auto"
-            camera-controls
-            touch-action="pan-y"
-            shadow-intensity="0.8"
-            shadow-softness="0.9"
-            environment-image="apartment"
-            skybox-image="apartment"
-            exposure="1.5"
-            camera-target="auto auto auto"
-            camera-orbit="45deg 60deg auto"
-            min-camera-orbit="auto auto 1m"
-            max-camera-orbit="auto auto 100m"
-            field-of-view="45deg"
-            interpolation-decay="200"
-            loading="eager"
-            bounds="tight"
-            align-model="center"
-        >
+            alt="Instalación Sanitaria Proyecto PAZ"
+            ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto"
+            camera-controls touch-action="pan-y"
+            shadow-intensity="0.7" shadow-softness="0.8"
+            environment-image="apartment" exposure="1.3"
+            camera-target="auto auto auto" camera-orbit="45deg 60deg auto"
+            field-of-view="45deg" bounds="tight" loading="eager">
             <button slot="ar-button" style="
-                position: absolute; bottom: 20px; right: 20px;
-                background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-                color: white; border: none; padding: 14px 28px;
-                border-radius: 30px; font-size: 1rem; font-weight: 600;
-                cursor: pointer; display: flex; align-items: center; gap: 8px;
-                box-shadow: 0 4px 18px rgba(0,210,255,0.4);
-            ">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                background:linear-gradient(135deg,#00cc66,#00ff88);color:#0a0a14;
+                border:none;padding:14px 24px;border-radius:30px;font-weight:700;
+                font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <rect x="3" y="3" width="18" height="18" rx="3"/>
                     <circle cx="8.5" cy="8.5" r="1.5"/>
                     <path d="M21 15l-5-5L5 21"/>
                 </svg>
-                Ver en tu espacio 📱
+                Ver en tu espacio 🥽
             </button>
         </model-viewer>
-        
-        <button id="ar-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="3"/>
-                <circle cx="8.5" cy="8.5" r="1.5"/>
-                <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            Ver en AR 🥽
-        </button>
     </div>
-
-    <div class="info-panel">
-        <div class="info-card">
-            <div class="icon">📐</div>
-            <div class="label">Especialidad</div>
-            <div class="value">Sanitario</div>
-        </div>
-        <div class="info-card">
-            <div class="icon">📏</div>
-            <div class="label">Escala</div>
-            <div class="value">1:100</div>
-        </div>
-        <div class="info-card">
-            <div class="icon">🏢</div>
-            <div class="label">Niveles</div>
-            <div class="value">S2 a N7</div>
-        </div>
-        <div class="info-card">
-            <div class="icon">📍</div>
-            <div class="label">Ubicación</div>
-            <div class="value">La Paz, BCS</div>
-        </div>
+    <div class="info-grid">
+        <div class="info-card"><div class="icon">📐</div><div class="label">Especialidad</div><div class="value">Sanitario</div></div>
+        <div class="info-card"><div class="icon">📏</div><div class="label">Tuberías + Fittings</div><div class="value">5,062 elementos</div></div>
+        <div class="info-card"><div class="icon">⚖️</div><div class="label">Tamaño modelo</div><div class="value">7.7 MB</div></div>
+        <div class="info-card"><div class="icon">🏢</div><div class="label">Niveles</div><div class="value">S2 → N7</div></div>
     </div>
+</div>
 
-    <footer>
-        SOH — Servicios y Obras Hidráulicas · Proyecto PAZ · 2026<br>
-        Escanea el QR para ver en tu espacio
-    </footer>
+<!-- Pluvial -->
+<div id="panel-pluvial" class="panel">
+    <div class="viewer-container">
+        <div class="loading-overlay" id="loader-pluvial">
+            <div class="spinner"></div>
+            <p>Cargando modelo pluvial...</p>
+        </div>
+        <model-viewer id="mv-pluvial"
+            src="https://cdn.jsdelivr.net/gh/hrubio-lang/paz-sanitario-ar@main/pluvial_draco.glb"
+            alt="Instalación Pluvial Proyecto PAZ"
+            ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto"
+            camera-controls touch-action="pan-y"
+            shadow-intensity="0.7" shadow-softness="0.8"
+            environment-image="apartment" exposure="1.3"
+            camera-target="auto auto auto" camera-orbit="45deg 60deg auto"
+            field-of-view="45deg" bounds="tight" loading="lazy">
+            <button slot="ar-button" style="
+                background:linear-gradient(135deg,#00cc66,#00ff88);color:#0a0a14;
+                border:none;padding:14px 24px;border-radius:30px;font-weight:700;
+                font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:8px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="18" height="18" rx="3"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <path d="M21 15l-5-5L5 21"/>
+                </svg>
+                Ver en tu espacio 🥽
+            </button>
+        </model-viewer>
+    </div>
+    <div class="info-grid">
+        <div class="info-card"><div class="icon">💧</div><div class="label">Especialidad</div><div class="value">Pluvial</div></div>
+        <div class="info-card"><div class="icon">📏</div><div class="label">Tuberías + Fittings</div><div class="value">~4,800 elementos</div></div>
+        <div class="info-card"><div class="icon">⚖️</div><div class="label">Tamaño modelo</div><div class="value">7.4 MB</div></div>
+        <div class="info-card"><div class="icon">🏢</div><div class="label">Niveles</div><div class="value">S2 → N7</div></div>
+    </div>
+</div>
 
-    <script>
-        const modelViewer = document.getElementById('model-viewer');
-        const arButton = document.getElementById('ar-button');
-        const loadingOverlay = document.getElementById('loading-overlay');
-        
-        let progressBar = null;
-        let progressText = null;
+<footer>
+    SOH — Servicios y Obras Hidráulicas · Proyecto PAZ · La Paz, BCS · 2026<br>
+    Escanea el QR para ver los modelos en 3D y realidad aumentada
+</footer>
 
-        // Crear barra de progreso
-        modelViewer.addEventListener('progress', (e) => {
-            if (e.detail.totalProgress > 0) {
-                if (!progressBar) {
-                    loadingOverlay.innerHTML = '<p style="color:#00d2ff;font-weight:bold;">Descargando modelo 3D...</p><div style="width:80%;height:6px;background:#333;border-radius:3px;margin:10px auto;"><div id="pb" style="width:0%;height:100%;background:#00d2ff;border-radius:3px;transition:width 0.3s;"></div></div><p id="pt" style="font-size:0.8rem;">0%</p>';
-                    progressBar = document.getElementById('pb');
-                    progressText = document.getElementById('pt');
-                }
+<script>
+    let currentTab = 'sanitario';
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.getElementById('panel-' + tab).classList.add('active');
+        document.querySelector('.tab:nth-child(' + (tab === 'sanitario' ? 1 : 2) + ')').classList.add('active');
+
+        // Cargar el modelo si aún no se ha cargado
+        const mv = document.getElementById('mv-' + tab);
+        if (mv && !mv.loaded) {
+            mv.setAttribute('loading', 'eager');
+        }
+    }
+
+    // Configurar eventos de carga para ambos modelos
+    ['sanitario', 'pluvial'].forEach(type => {
+        const mv = document.getElementById('mv-' + type);
+        const loader = document.getElementById('loader-' + type);
+
+        mv.addEventListener('load', () => {
+            mv.loaded = true;
+            loader.classList.add('done');
+            setTimeout(() => { if (loader.parentNode) loader.remove(); }, 600);
+        });
+
+        mv.addEventListener('error', () => {
+            loader.innerHTML = '<p style="color:#ff6b6b;">⚠️ Error al cargar el modelo. Intenta refrescar.</p>';
+        });
+
+        // Barra de progreso
+        mv.addEventListener('progress', (e) => {
+            if (e.detail.totalProgress > 0.01) {
                 const pct = Math.round(e.detail.totalProgress * 100);
-                progressBar.style.width = pct + '%';
-                progressText.textContent = pct + '% (7.7 MB)';
+                loader.innerHTML = '<p style="color:#00d2ff;font-weight:600;">Cargando modelo ' + type + '...</p>' +
+                    '<div style="width:70%;height:6px;background:#333;border-radius:3px;margin:8px auto;">' +
+                    '<div style="width:' + pct + '%;height:100%;background:#00d2ff;border-radius:3px;transition:width 0.2s;"></div></div>' +
+                    '<p style="font-size:0.75rem;color:#888;">' + pct + '%</p>';
             }
         });
+    });
 
-        modelViewer.addEventListener('load', () => {
-            loadingOverlay.innerHTML = '<p style="color:#00ff88;font-size:1.2rem;">✅ Modelo cargado</p>';
-            setTimeout(() => loadingOverlay.classList.add('hidden'), 800);
-            setTimeout(() => loadingOverlay.remove(), 1300);
-        });
-        
-        modelViewer.addEventListener('error', (e) => {
-            loadingOverlay.innerHTML = '<p style="color:#ff6b6b;">Error al cargar el modelo</p>';
-        });
-        
-        // Mostrar botón AR con retraso para asegurar que cargó
-        setTimeout(() => {
-            arButton.classList.add('visible');
-        }, 2000);
-        
-        arButton.addEventListener('click', () => {
-            try {
-                modelViewer.activateAR();
-            } catch(e) {
-                alert('AR no disponible en este dispositivo. Intenta con Chrome en Android o Safari en iOS.');
-            }
-        });
-        
-        console.log('Proyecto PAZ — Visor AR Sanitario | v2');
-    </script>
+    console.log('Proyecto PAZ — Visor 3D Sanitario + Pluvial | SOH 2026');
+</script>
 
 </body>
 </html>
