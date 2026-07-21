@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proyecto PAZ — Sanitario 3D + AR</title>
     
-    <!-- modelviewer.dev -->
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
     
     <style>
@@ -54,9 +53,9 @@
         
         .viewer-container {
             width: 100%;
-            max-width: 800px;
-            height: 65vh;
-            min-height: 400px;
+            max-width: 900px;
+            height: 70vh;
+            min-height: 450px;
             margin: 10px auto;
             position: relative;
             border-radius: 12px;
@@ -68,13 +67,12 @@
         model-viewer {
             width: 100%;
             height: 100%;
-            --poster-color: transparent;
             --progress-bar-color: #00d2ff;
             --progress-bar-height: 4px;
             --progress-mask: transparent;
         }
         
-        /* Botón AR personalizado (se oculta si AR no está disponible) */
+        /* Botón AR */
         #ar-button {
             position: absolute;
             bottom: 20px;
@@ -95,30 +93,20 @@
             z-index: 10;
         }
         
-        #ar-button.visible {
-            display: flex;
-        }
-        
+        #ar-button.visible { display: flex; }
         #ar-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 24px rgba(0,210,255,0.6);
         }
-        
-        #ar-button:active {
-            transform: translateY(0);
-        }
-        
-        #ar-button svg {
-            width: 22px;
-            height: 22px;
-        }
+        #ar-button:active { transform: translateY(0); }
+        #ar-button svg { width: 22px; height: 22px; }
         
         .info-panel {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             padding: 15px 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 12px;
             margin-bottom: 20px;
         }
@@ -141,10 +129,10 @@
             color: #555;
             font-size: 0.7rem;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
         }
         
-        /* Loading overlay */
+        /* Loading */
         #loading-overlay {
             position: absolute;
             inset: 0;
@@ -156,11 +144,7 @@
             z-index: 5;
             transition: opacity 0.4s;
         }
-        
-        #loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+        #loading-overlay.hidden { opacity: 0; pointer-events: none; }
         
         .spinner {
             width: 48px;
@@ -170,10 +154,7 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         
         #loading-overlay p {
             margin-top: 14px;
@@ -181,7 +162,6 @@
             font-size: 0.85rem;
         }
         
-        /* Responsive */
         @media (max-width: 600px) {
             .viewer-container { height: 55vh; min-height: 300px; border-radius: 0; }
             #ar-button { bottom: 12px; right: 12px; padding: 12px 22px; font-size: 0.9rem; }
@@ -192,7 +172,7 @@
 
     <header>
         <h1>🏥 Proyecto PAZ — Sanitario 3D</h1>
-        <p>Modelo MKA_SAN_3D_W_XX · La Paz, BCS</p>
+        <p>MKA_SAN_3D_W_XX · La Paz, BCS</p>
         <div>
             <span class="badge">📐 Sanitario</span>
             <span class="badge">🏗️ 12 Niveles</span>
@@ -201,13 +181,11 @@
     </header>
 
     <div class="viewer-container">
-        <!-- Loading overlay -->
         <div id="loading-overlay">
             <div class="spinner"></div>
             <p>Cargando modelo 3D...</p>
         </div>
         
-        <!-- Modelo 3D -->
         <model-viewer 
             id="model-viewer"
             src="modelo.glb"
@@ -217,17 +195,19 @@
             ar-scale="auto"
             camera-controls
             touch-action="pan-y"
-            shadow-intensity="0.6"
+            shadow-intensity="0.5"
             environment-image="neutral"
-            exposure="1.2"
-            camera-orbit="45deg 75deg 15m"
-            min-camera-orbit="auto auto 2m"
-            max-camera-orbit="auto auto 50m"
+            exposure="1.0"
+            camera-target="auto auto auto"
+            camera-orbit="45deg 60deg auto"
+            min-camera-orbit="auto auto 1m"
+            max-camera-orbit="auto auto 100m"
+            field-of-view="45deg"
             interpolation-decay="200"
             loading="eager"
-            reveal="auto"
+            bounds="tight"
+            align-model="center"
         >
-            <!-- Slot AR button (fallback nativo) -->
             <button slot="ar-button" style="
                 position: absolute; bottom: 20px; right: 20px;
                 background: linear-gradient(135deg, #00d2ff, #3a7bd5);
@@ -245,7 +225,6 @@
             </button>
         </model-viewer>
         
-        <!-- Botón AR alternativo (más visible) -->
         <button id="ar-button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="3"/>
@@ -281,7 +260,7 @@
 
     <footer>
         SOH — Servicios y Obras Hidráulicas · Proyecto PAZ · 2026<br>
-        Modelo: MKA_SAN_3D_W_XX · Escanea el QR para ver en tu espacio
+        Escanea el QR para ver en tu espacio
     </footer>
 
     <script>
@@ -289,54 +268,30 @@
         const arButton = document.getElementById('ar-button');
         const loadingOverlay = document.getElementById('loading-overlay');
         
-        // Ocultar loading cuando el modelo cargue
         modelViewer.addEventListener('load', () => {
             loadingOverlay.classList.add('hidden');
             setTimeout(() => loadingOverlay.remove(), 500);
         });
         
-        // Mostrar botón AR si está disponible
-        modelViewer.addEventListener('ar-status', (event) => {
-            if (event.detail.status === 'session-started') {
-                loadingOverlay.classList.add('hidden');
-            }
+        modelViewer.addEventListener('error', (e) => {
+            console.error('Error al cargar el modelo:', e);
+            loadingOverlay.innerHTML = '<p style="color:#ff6b6b;">Error al cargar el modelo</p>';
         });
         
-        // Verificar disponibilidad de AR
-        async function checkAR() {
-            try {
-                // Scene Viewer (Android Chrome)
-                const canDoAR = await navigator.xr?.isSessionSupported?.('immersive-ar');
-                if (canDoAR !== false) {
-                    // Verificamos si el modelo tiene el atributo ar activo
-                    if (modelViewer.canActivateAR) {
-                        arButton.classList.add('visible');
-                    }
-                }
-            } catch(e) {
-                // Si falla, mostramos el botón de todos modos
-                // (modelviewer.dev maneja el fallback)
-            }
-            
-            // Fallback: mostrar siempre si el atributo ar está presente
-            if (modelViewer.hasAttribute('ar')) {
-                setTimeout(() => {
-                    arButton.classList.add('visible');
-                }, 1000);
-            }
-        }
+        // Mostrar botón AR con retraso para asegurar que cargó
+        setTimeout(() => {
+            arButton.classList.add('visible');
+        }, 2000);
         
-        // AR button click
         arButton.addEventListener('click', () => {
-            modelViewer.activateAR();
+            try {
+                modelViewer.activateAR();
+            } catch(e) {
+                alert('AR no disponible en este dispositivo. Intenta con Chrome en Android o Safari en iOS.');
+            }
         });
         
-        // Verificar AR al cargar
-        checkAR();
-        
-        // Log para debug
-        console.log('Proyecto PAZ — Visor AR Sanitario');
-        console.log('modelviewer.dev v3.x | AR Modes:', modelViewer.getAttribute('ar-modes'));
+        console.log('Proyecto PAZ — Visor AR Sanitario | v2');
     </script>
 
 </body>
