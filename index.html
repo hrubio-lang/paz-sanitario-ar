@@ -270,13 +270,30 @@
         const arButton = document.getElementById('ar-button');
         const loadingOverlay = document.getElementById('loading-overlay');
         
+        let progressBar = null;
+        let progressText = null;
+
+        // Crear barra de progreso
+        modelViewer.addEventListener('progress', (e) => {
+            if (e.detail.totalProgress > 0) {
+                if (!progressBar) {
+                    loadingOverlay.innerHTML = '<p style="color:#00d2ff;font-weight:bold;">Descargando modelo 3D...</p><div style="width:80%;height:6px;background:#333;border-radius:3px;margin:10px auto;"><div id="pb" style="width:0%;height:100%;background:#00d2ff;border-radius:3px;transition:width 0.3s;"></div></div><p id="pt" style="font-size:0.8rem;">0%</p>';
+                    progressBar = document.getElementById('pb');
+                    progressText = document.getElementById('pt');
+                }
+                const pct = Math.round(e.detail.totalProgress * 100);
+                progressBar.style.width = pct + '%';
+                progressText.textContent = pct + '% (7.7 MB)';
+            }
+        });
+
         modelViewer.addEventListener('load', () => {
-            loadingOverlay.classList.add('hidden');
-            setTimeout(() => loadingOverlay.remove(), 500);
+            loadingOverlay.innerHTML = '<p style="color:#00ff88;font-size:1.2rem;">✅ Modelo cargado</p>';
+            setTimeout(() => loadingOverlay.classList.add('hidden'), 800);
+            setTimeout(() => loadingOverlay.remove(), 1300);
         });
         
         modelViewer.addEventListener('error', (e) => {
-            console.error('Error al cargar el modelo:', e);
             loadingOverlay.innerHTML = '<p style="color:#ff6b6b;">Error al cargar el modelo</p>';
         });
         
