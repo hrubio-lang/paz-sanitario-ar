@@ -116,14 +116,14 @@
         <p style="margin-top:12px;color:#7799cc;font-size:0.85rem;">Cargando modelo pluvial...</p>
     </div>
     <model-viewer id="mv"
-        src="./pluvial_draco.glb"
+        src="https://cdn.jsdelivr.net/gh/hrubio-lang/paz-sanitario-ar@main/pluvial_draco.glb"
         alt="Instalación Pluvial Proyecto PAZ"
         ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto"
         camera-controls touch-action="pan-y"
-        shadow-intensity="0.8" shadow-softness="0.9"
-        environment-image="apartment" exposure="1.2"
+        shadow-intensity="0.7" shadow-softness="0.8"
+        environment-image="apartment" exposure="1.3"
         camera-target="auto auto auto" camera-orbit="45deg 60deg auto"
-        field-of-view="45deg" bounds="tight" loading="eager">
+        field-of-view="45deg" bounds="tight" loading="lazy">
         <button slot="ar-button" style="
             background:linear-gradient(135deg,#0066ff,#3399ff);color:#fff;
             border:none;padding:14px 24px;border-radius:30px;font-weight:700;
